@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <script type="module">
+        import * as THREE from "https://unpkg.com/three/build/three.module.js";
+        import {OrbitControls} from "https://unpkg.com/three/examples/jsm/controls/OrbitControls.js";
+        import dat from 'https://unpkg.com/three/examples/jsm/libs/dat.gui.module.js';
+
+        "use strict";
+
+        let renderer, scene, camera, cameraControls, meshCono, meshCubo, meshEsfera;
+
+        function init() {
+            // RENDERER ENGINE
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            //renderer.setClearColor(new THREE.Color(1, 1, 1,));
+            renderer.setSize(window.innerWidth, window.innerHeighft);
+            document.body.appendChild(renderer.domElement);
+
+            // SCENE
+            scene = new THREE.Scene();
+
+            // CAMERA
+            let fov = 60;
+            let aspect = window.innerWidth / window.innerHeight;
+            let near = 0.1;
+            let far = 10000;
+            camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.set(0, 0, 5);
+            cameraControls = new OrbitControls(camera, renderer.domElement);
+
+            // MODELS
+            let geometry = new THREE.BoxGeometry();
+            let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true});
+            meshCubo = new THREE.Mesh(geometry, material);
+    
+
+            geometry = new THREE.SphereGeometry();
+            material = new THREE.MeshBasicMaterial({color: "white", wireframe: true});
+            meshEsfera = new THREE.Mesh(geometry, material);
+
+
+            geometry = new THREE.ConeGeometry();
+            material = new THREE.MeshBasicMaterial({color: "white", wireframe: true});
+            meshCono = new THREE.Mesh(geometry, material);
+            meshCono.position.x = 3
+
+
+            // SCENE GRAPH
+            scene.add(meshCubo);
+            scene.add(meshEsfera);
+            scene.add(meshCono);
+
+            //GUI
+            let gui = new dat.GUI();
+
+            // Cubo
+
+            let modelCubo = {
+                rotY: meshCubo.rotation.y * Math.PI / 180,
+                rotX: meshCubo.rotation.x * Math.PI / 180,
+                rotZ: meshCubo.rotation.z * Math.PI / 180,
+                colorPalette: [1, 1, 1]
+            }  
+
+            let cuboMenu = gui.addFolder("Menu cubo");
+            
+            let cuboPosition = cuboMenu.addFolder("Position");
+            cuboPosition.add(meshCubo.position, "x").name("Pos en X").min(-5).max(5).step(0.5).setValue(-3).name("X").listen().onChange(function(value) {   });
+            cuboPosition.add(meshCubo.position, "y").name("Pos en Y").min(-5).max(5).step(0.5).setValue(0).name("Y").listen().onChange(function(value) {   }); 
+            cuboPosition.add(meshCubo.position, "z").name("Pos en Z").min(-5).max(5).step(0.5).setValue(0).name("Z").listen().onChange(function(value) {   }); 
+
+            let cuboRot = cuboMenu.addFolder("Rotation")
+            cuboRot.add(modelCubo, "rotX").min(-180).max(180).step(10).setValue(0).name("X (deg)").listen().onChange(function(value) {
+                meshCubo.rotation.x = modelCubo.rotX * Math.PI / 180;
+            });
+
+            cuboRot.add(modelCubo, "rotY").min(-180).max(180).step(10).setValue(0).name("Y (deg)").listen().onChange(function(value) {
+                meshCubo.rotation.y = modelCubo.rotY * Math.PI / 180;
+            });
+
+            cuboRot.add(modelCubo, "rotZ").min(-180).max(180).step(10).setValue(0).name("Z (deg)").listen().onChange(function(value) {
+                meshCubo.rotation.z = modelCubo.rotZ * Math.PI / 180;
+            });
+
+            let cuboApariencia = cuboMenu.addFolder("Apariencia");
+
+            cuboApariencia.addColor(modelCubo, "colorPalette").name("Color").listen().onChange(function(color) {
+                meshCubo.material.color = new THREE.Color(color[0]/255, color[1]/255, color[2]/255);
+            });
+            cuboApariencia.add(meshCubo.material, "wireframe").setValue(true).name("Wireframe").listen().onChange(function(value){});
+
+
+
+           
+           
+            //Esfera
+
+            let modelesfera = {
+                colorPalette: [1, 1, 1],
+                rotY: meshEsfera.rotation.y * Math.PI / 180,
+                rotX: meshEsfera.rotation.x * Math.PI / 180,
+                rotZ: meshEsfera.rotation.z * Math.PI / 180
+            }  
+
+            let esferaMenu = gui.addFolder("Menu Esfera");
+            
+            let esferaPosition = esferaMenu.addFolder("Position");
+            esferaPosition.add(meshEsfera.position, "x").name("Pos en X").min(-5).max(5).step(0.5).setValue(0).name("X").listen().onChange(function(value) {   });
+            esferaPosition.add(meshEsfera.position, "y").name("Pos en Y").min(-5).max(5).step(0.5).setValue(0).name("Y").listen().onChange(function(value) {   }); 
+            esferaPosition.add(meshEsfera.position, "z").name("Pos en Z").min(-5).max(5).step(0.5).setValue(0).name("Z").listen().onChange(function(value) {   }); 
+
+            let esferaRot = esferaMenu.addFolder("Rotation")
+           
+            esferaRot.add(modelesfera, "rotX").min(-180).max(180).step(10).setValue(0).name("X (deg)").listen().onChange(function(value) {
+                meshEsfera.rotation.x = modelesfera.rotX * Math.PI / 180;
+            });
+
+            esferaRot.add(modelesfera, "rotY").min(-180).max(180).step(10).setValue(0).name("Y (deg)").listen().onChange(function(value) {
+                meshEsfera.rotation.y = modelesfera.rotY * Math.PI / 180;
+            });
+
+            esferaRot.add(modelesfera, "rotZ").min(-180).max(180).step(10).setValue(0).name("Z (deg)").listen().onChange(function(value) {
+                meshEsfera.rotation.z = modelesfera.rotZ * Math.PI / 180;
+            });
+
+            let esferaApariencia = esferaMenu.addFolder("Apariencia"); 
+
+            esferaApariencia.addColor(modelesfera, "colorPalette").name("Color").listen().onChange(function(color) {
+                meshEsfera.material.color = new THREE.Color(color[0]/255, color[1]/255, color[2]/255);
+            });
+            esferaApariencia.add(meshEsfera.material, "wireframe").setValue(true).name("Wireframe").listen().onChange(function(value){});
+
+            
+            
+           
+           
+            //Cono
+
+            let modelcono = {
+                colorPalette: [1, 1, 1],
+                rotY: meshCono.rotation.y * Math.PI / 180,
+                rotX: meshCono.rotation.x * Math.PI / 180,
+                rotZ: meshCono.rotation.z * Math.PI / 180
+            }
+
+            let conoMenu = gui.addFolder("Menu cono");
+            
+            let conoPosition = conoMenu.addFolder("Position");
+            conoPosition.add(meshCono.position, "x").name("Pos en X").min(-5).max(5).step(0.5).setValue(3).name("X").listen().onChange(function(value) {   });
+            conoPosition.add(meshCono.position, "y").name("Pos en Y").min(-5).max(5).step(0.5).setValue(0).name("Y").listen().onChange(function(value) {   }); 
+            conoPosition.add(meshCono.position, "z").name("Pos en Z").min(-5).max(5).step(0.5).setValue(0).name("Z").listen().onChange(function(value) {   }); 
+
+            let conoRot = conoMenu.addFolder("Rotation")
+            conoRot.add(modelcono, "rotX").min(-180).max(180).step(10).setValue(0).name("X (deg)").listen().onChange(function(value) {
+                meshCono.rotation.x = modelcono.rotX * Math.PI / 180;
+            });
+
+            conoRot.add(modelcono, "rotY").min(-180).max(180).step(10).setValue(0).name("Y (deg)").listen().onChange(function(value) {
+                meshCono.rotation.y = modelcono.rotY * Math.PI / 180;
+            });
+
+            conoRot.add(modelcono, "rotZ").min(-180).max(180).step(10).setValue(0).name("Z (deg)").listen().onChange(function(value) {
+                meshCono.rotation.z = modelcono.rotZ * Math.PI / 180;
+            });
+
+            let conoApariencia = conoMenu.addFolder("Apariencia");
+
+            conoApariencia.addColor(modelcono, "colorPalette").name("Color").listen().onChange(function(color) {
+                meshCono.material.color = new THREE.Color(color[0]/255, color[1]/255, color[2]/255);
+            });
+            conoApariencia.add(meshCono.material, "wireframe").setValue(true).name("Wireframe").listen().onChange(function(value){});
+
+           
+           
+           
+           
+            gui.open();
+            
+            // ANIMATION
+            renderLoop();
+        }
+
+        function renderLoop() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.render(scene, camera); // DRAW SCENE
+            updateScene();
+            requestAnimationFrame(renderLoop);
+        }
+
+        function updateScene() {
+            //mesh.rotation.y = mesh.rotation.y + 1 * Math.PI / 180;
+        }
+
+        // EVENT LISTENERS & HANDLERS
+        document.addEventListener("DOMContentLoaded", init);
+
+        window.addEventListener("resize", function() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
